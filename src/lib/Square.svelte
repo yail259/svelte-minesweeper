@@ -1,18 +1,31 @@
 <script>
+    import { flagged } from './flagged.js';
+    import { unmasked } from './masked';
+
     // send event of game over to grid
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
     // before square is clicked
-    let masked = true;
-    let isFlag = false;
+    let isMask = true;
+    $: isMask = !$unmasked.includes(id);
+
+    // whether this square is flagged, or is a mine
+    let isFlag = false; 
+    $: isFlag = $flagged.includes(id);
 
     export let isMine;
+
+    // the number of mines in the surrounding
     export let surrounding;
+    // whether the game is won
     export let gameState;
 
+    // id identifies which square this is
+    export let id;
+
     function clickSquare(e) {
-        if (gameState === true) {
+        if (gameState || !isMask) {
             return;
         }
         
@@ -20,19 +33,27 @@
             if (isFlag) return;
 
             // turn off mask
-            masked = false;
+            $unmasked = [...$unmasked, id];
+
+            // send game over event
             if (isMine) {
                 dispatch("gameover", {});
             }            
         } else if (e.which === 3) {
-            isFlag = !isFlag;
+            if (isFlag) {                
+                // remove flag from store                
+                $flagged = $flagged.filter(flag => flag !== id)
+
+            } else {
+                $flagged = [...$flagged, id];
+            }            
         }
     }
 </script>
 
 
 <button on:click|preventDefault={clickSquare} on:contextmenu|preventDefault={clickSquare}>
-    {#if masked}
+    {#if isMask}
         <div/>
     {:else}
         {#if isMine}

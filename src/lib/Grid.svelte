@@ -1,14 +1,26 @@
 <script>
     import Square from './Square.svelte'
+    import { flagged } from './flagged';
+    import { unmasked } from './masked';
 
     // size of grid
     let width = 10;
     let height = 10;
+
+    // no mines on board
     let noMines = 0;
+
+    // keeps track of the squares, 1 is mine, 0 is safe
     let squares = [];
+    // keeps track of the no mines in the neighbouring squares
     let surrounding = [];
+
     let gameover = false;
+
+    // no of correct flags on mines
     let score = 0;
+    // no of incorrect flags
+    let wrongScore = 0;
 
     // percentage of squares that's a mine
     let PERCENTAGE_MINE = 0.3;
@@ -16,7 +28,8 @@
     $: {
         squares = [];
         surrounding = [];
-        noMines = 0;
+        noMines = 0;     
+        $unmasked = [];   
 
         for (let i=0; i < width * height; i++) {
             if (Math.random() < PERCENTAGE_MINE) {
@@ -47,28 +60,54 @@
             }
 
             surrounding.push(noNeighbours);
-        }
+        }     
     }
+
 
     function handleGameover(event) {
         gameover = true;
-    }
 
-    function checkGameState(e) {
-        if (gameover) {
-            e.stopPropagation();
+        for (let index of $flagged) {
+            if (squares[index] === 1) {
+                score++;
+            } else {
+                wrongScore++;
+            }                
         }
+    }    
+
+
+    function reset() {
+        gameover = false;
+
+        $unmasked = [];
+        $flagged = [];
     }
-    
    
 </script>
 
+{$unmasked}
+{$flagged}
 
 {#if gameover} 
-    <h1>Game over :()</h1>
+    <h1>Game Over :()</h1>
 
-    <button >
+    <h2>You flagged {score} out of {noMines} mines!</h2>
+
+    {#if wrongScore != 0} 
+        <h2>You wrongly flagged {wrongScore} safe squares as mines.</h2>
+    {/if}
+
+    <button on:click={reset}>
         Try again!
+    </button>
+{/if}
+
+{#if score===noMines}
+    <h1>You WON!!!</h1>
+
+    <button on:click={reset}>
+        Another!
     </button>
 {/if}
 
@@ -90,7 +129,12 @@
     style="grid-template-columns: repeat({width}, 2em);
     grid-template-rows: repeat({height}, 2em);">
     {#each squares as square, i}
-        <Square isMine={square} surrounding={surrounding[i]} on:gameover={handleGameover} gameState={gameover}/>
+        <Square 
+        on:gameover={handleGameover} 
+        isMine={square} 
+        surrounding={surrounding[i]} 
+        gameState={gameover}
+        id={i}/>
     {/each}
 </div>
 
@@ -101,7 +145,6 @@
 	}
 
     button {
-        margin: 2em;
         padding: 2em;
     }
 
