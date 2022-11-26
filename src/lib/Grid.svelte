@@ -15,6 +15,7 @@
     // keeps track of the no mines in the neighbouring squares
     let surrounding = [];
 
+    let starting = true;
     let gameover = false;
 
     // no of correct flags on mines
@@ -24,6 +25,9 @@
 
     // percentage of squares that's a mine
     let PERCENTAGE_MINE = 0.3;
+
+    $unmasked = [];
+    $flagged = [];
     
     $: {
         squares = [];
@@ -79,6 +83,7 @@
 
     function reset() {
         gameover = false;
+        starting = true;
 
         $unmasked = [];
         $flagged = [];
@@ -86,62 +91,83 @@
    
 </script>
 
-{$unmasked}
-{$flagged}
 
-{#if gameover} 
-    <h1>Game Over :()</h1>
 
-    <h2>You flagged {score} out of {noMines} mines!</h2>
+<main>
+    {#if gameover} 
+        <h1>Game Over :()</h1>
 
-    {#if wrongScore != 0} 
-        <h2>You wrongly flagged {wrongScore} safe squares as mines.</h2>
+        <h2>You flagged {score} out of {noMines} mines!</h2>
+        <h2>You uncovered {$unmasked.length-1} out of {squares.length-noMines} safe squares!</h2>
+
+        {#if wrongScore != 0} 
+            <h2>You wrongly flagged {wrongScore} safe squares as mines.</h2>
+        {/if}
+
+        <button on:click={reset}>
+            Try again!
+        </button>
     {/if}
 
-    <button on:click={reset}>
-        Try again!
-    </button>
-{/if}
+    {#if score===noMines}
+        <h1>You WON!!!</h1>
 
-{#if score===noMines}
-    <h1>You WON!!!</h1>
+        <button on:click={reset}>
+            Another!
+        </button>
+    {/if}
 
-    <button on:click={reset}>
-        Another!
-    </button>
-{/if}
+    {#if starting}
+        <div>
+            <h3>The Grid is {width} by {height}.</h3>
 
-<div>
-    The Grid is {width} by {height}, with {noMines} mines.
-</div>
+            <h3>Left click to uncover. Right click to flag.</h3>
 
-<div>
-    <input type="range" id="width" name="width" min="1" max="15" bind:value={width}>
-    <label for="width">Width</label>
-</div>
+            <h4>
+                Note: the mines wrap around, meaning that a number at the right most edge 
+                includes mines in the left most edge and numbers at the top include mines at the bottom.
+            </h4>
+        </div>
 
-<div>
-    <input type="range" id="height" name="height" min="1" max="15" bind:value={height}>
-    <label for="height">Height</label>
-</div>
+        <div>
+            <input type="range" id="width" name="width" min="1" max="15" bind:value={width}>
+            <label for="width">Width</label>
+        </div>
 
-<div class="grid-mines" 
+        <div>
+            <input type="range" id="height" name="height" min="1" max="15" bind:value={height}>
+            <label for="height">Height</label>
+        </div>
+
+        <button on:click={()=> { starting = false}}>
+            Start!
+        </button>
+        
+    {/if}
+
+    <div class="grid-mines" 
     style="grid-template-columns: repeat({width}, 2em);
     grid-template-rows: repeat({height}, 2em);">
-    {#each squares as square, i}
-        <Square 
-        on:gameover={handleGameover} 
-        isMine={square} 
-        surrounding={surrounding[i]} 
-        gameState={gameover}
-        id={i}/>
-    {/each}
-</div>
+        {#each squares as square, i}
+            <Square 
+            on:gameover={handleGameover} 
+            isMine={square} 
+            surrounding={surrounding[i]} 
+            gameState={gameover}
+            id={i}/>
+        {/each}
+    </div>
+</main>
+
+
+
+
 
 <style>
 	div.grid-mines {
 		display: grid;
-		grid-gap: 1em
+		grid-gap: 1em;
+        justify-content: center;
 	}
 
     button {
@@ -151,5 +177,9 @@
     div {
         margin: 1em;
         padding: 1em;
+    }
+
+    main {
+        max-width: 50em;
     }
 </style>
