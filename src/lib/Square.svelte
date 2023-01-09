@@ -38,12 +38,10 @@
             // send game over event
             if (isMine) {
                 dispatch("gameover", {});
-            } 
-            
-            // if square is 0
-            if (surrounding === 0) {
+            } else if (surrounding === 0) {
+                // if square is 0
                 dispatch("iszero", {id: id});
-            }
+            }           
         } else if (e.which === 3) {
             if (isFlag) {                
                 // remove flag from store                

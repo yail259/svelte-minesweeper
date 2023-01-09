@@ -166,11 +166,6 @@
             <h3>The Grid is {width} by {height}.</h3>
 
             <h3>Left click to uncover. Right click to flag.</h3>
-
-            <h4>
-                Note: the mines wrap around, meaning that a number at the right most edge 
-                includes mines in the left most edge and numbers at the top include mines at the bottom.
-            </h4>
         </div>
 
         <div>
