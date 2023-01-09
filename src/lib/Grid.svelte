@@ -151,38 +151,39 @@
         <button on:click={reset}>
             Try again!
         </button>
-    {/if}
 
-    {#if score===noMines}
-        <h1>You WON!!!</h1>
+    {:else}
+        {#if score===noMines}
+            <h1>You WON!!!</h1>
 
-        <button on:click={reset}>
-            Another!
-        </button>
-    {/if}
+            <button on:click={reset}>
+                Another!
+            </button>
+        {/if}
 
-    {#if starting}
-        <div>
-            <h3>The Grid is {width} by {height}.</h3>
+        {#if starting}
+            <div>
+                <h3>The Grid is {width} by {height}.</h3>
 
-            <h3>Left click to uncover. Right click to flag.</h3>
-        </div>
+                <h3>Left click to uncover. Right click to flag.</h3>
+            </div>
 
-        <div>
-            <input type="range" id="width" name="width" min="1" max="15" bind:value={width}>
-            <label for="width">Width</label>
-        </div>
+            <div>
+                <input type="range" id="width" name="width" min="1" max="15" bind:value={width}>
+                <label for="width">Width</label>
+            </div>
 
-        <div>
-            <input type="range" id="height" name="height" min="1" max="15" bind:value={height}>
-            <label for="height">Height</label>
-        </div>
+            <div>
+                <input type="range" id="height" name="height" min="1" max="15" bind:value={height}>
+                <label for="height">Height</label>
+            </div>
 
-        <button on:click={()=> {starting = false}}>
-            Start!
-        </button>
-        
-    {/if}
+            <button on:click={()=> {starting = false}}>
+                Start!
+            </button>
+            
+        {/if}
+    {/if}    
 
     <div class="grid-mines" 
     style="grid-template-columns: repeat({width}, 2em);
@@ -198,9 +199,6 @@
         {/each}
     </div>
 </main>
-
-
-
 
 
 <style>
