@@ -38,7 +38,12 @@
             // send game over event
             if (isMine) {
                 dispatch("gameover", {});
-            }            
+            } 
+            
+            // if square is 0
+            if (surrounding === 0) {
+                dispatch("iszero", {id: id});
+            }
         } else if (e.which === 3) {
             if (isFlag) {                
                 // remove flag from store                
@@ -52,23 +57,38 @@
 </script>
 
 
-<button on:click|preventDefault={clickSquare} on:contextmenu|preventDefault={clickSquare}>
-    {#if isMask}
-        <div/>
+{#if gameState}
+    {#if isMine}
+        <img src="rick.jpeg" alt="cat mine" width="30" height="30">
     {:else}
-        {#if isMine}
-            <img src="rick.jpeg" alt="cat mine" width="30" height="30">
-        {:else}
+        <div>
+            {surrounding}
+        </div>    
+    {/if}  
+{:else}
+    <button on:click|preventDefault={clickSquare} on:contextmenu|preventDefault={clickSquare}>
+        {#if isMask}
             <div>
-                {surrounding}
-            </div>    
+                <!-- {surrounding} -->
+            </div>
+        {:else}
+            {#if isMine}
+                <img src="rick.jpeg" alt="rick mine" width="30" height="30">
+            {:else}
+                <div>
+                    {surrounding}
+                </div>    
+            {/if}
         {/if}
-    {/if}
 
-    {#if isFlag}
-        <img src="cat.jpeg" alt="cat mine" width="30" height="30">
-    {/if}
-</button>
+        {#if isFlag}
+            <img src="cat.jpeg" alt="cat flag" width="30" height="30">
+        {/if}
+    </button>
+{/if}
+
+
+
 
 <style>
     button {

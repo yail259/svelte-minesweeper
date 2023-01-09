@@ -24,11 +24,11 @@
     let wrongScore = 0;
 
     // percentage of squares that's a mine
-    let PERCENTAGE_MINE = 0.3;
+    let PERCENTAGE_MINE = 0.2;
 
     $unmasked = [];
     $flagged = [];
-    
+
     $: {
         squares = [];
         surrounding = [];
@@ -47,16 +47,11 @@
         for (let i=0; i < width * height; i++) {
             let noNeighbours = 0;
 
-            // neighbouring squares indices
-            let neighbours = [
-                i - width - 1, i - width, i - width + 1,
-                i - 1, i + 1,
-                i + width - 1, i + width, i + width + 1];
-            
-            // check noMines in neighbours
+            let neighbours = listNeighbours(i, width, height);
+
             for (let neighbour of neighbours) {
                 if (neighbour >= 0 
-                && neighbour < squares.length 
+                && neighbour < squares.length
                 && squares[neighbour] === 1
                 ) {
                     noNeighbours++;
@@ -65,6 +60,37 @@
 
             surrounding.push(noNeighbours);
         }     
+    }
+
+    function listNeighbours(itemNo, width, height) {
+        // neighbouring squares indices
+        let normalNeighbours = [
+                itemNo - width - 1, itemNo - width, itemNo - width + 1,
+                itemNo - 1, itemNo + 1,
+                itemNo + width - 1, itemNo + width, itemNo + width + 1
+            ];
+
+            // shouldn't wrap around to other side of grid
+            let leftEdgeNeighbour = [
+                itemNo - width, itemNo - width + 1,
+                itemNo + 1,
+                itemNo + width, itemNo + width + 1
+            ];
+            
+            let rightEdgeNeighbour = [
+                itemNo - width - 1, itemNo - width, 
+                itemNo - 1, 
+                itemNo + width - 1, itemNo + width
+            ];
+
+            // check noMines in neighbours
+            if (itemNo % width === 0) {
+                return leftEdgeNeighbour;
+            } else if (itemNo % width === width-1) {
+                return rightEdgeNeighbour;
+            } else {
+                return normalNeighbours;
+            }
     }
 
 
@@ -87,6 +113,24 @@
 
         $unmasked = [];
         $flagged = [];
+    }
+
+    function handleZero(event) {
+        recursiveZero(event.detail.id);
+    }
+
+    function recursiveZero(id) {
+        let neighbours = listNeighbours(id, width, height);
+        
+        for (let neighbour of neighbours) {
+            if (!$unmasked.includes(neighbour)) {
+                $unmasked = [...$unmasked, neighbour];   
+            
+                if (surrounding[neighbour] === 0) {
+                    recursiveZero(neighbour);
+                }
+            }            
+        }        
     }
    
 </script>
@@ -139,7 +183,7 @@
             <label for="height">Height</label>
         </div>
 
-        <button on:click={()=> { starting = false}}>
+        <button on:click={()=> {starting = false}}>
             Start!
         </button>
         
@@ -151,6 +195,7 @@
         {#each squares as square, i}
             <Square 
             on:gameover={handleGameover} 
+            on:iszero={handleZero}
             isMine={square} 
             surrounding={surrounding[i]} 
             gameState={gameover}
