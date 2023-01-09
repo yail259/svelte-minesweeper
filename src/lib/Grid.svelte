@@ -152,6 +152,20 @@
             Try again!
         </button>
 
+        <div class="grid-mines" 
+            style="grid-template-columns: repeat({width}, 2em);
+            grid-template-rows: repeat({height}, 2em);">
+            {#each squares as square, i}
+                <Square 
+                on:gameover={handleGameover} 
+                on:iszero={handleZero}
+                isMine={square} 
+                surrounding={surrounding[i]} 
+                gameState={gameover}
+                id={i}/>
+            {/each}
+        </div>      
+
     {:else}
         {#if score===noMines}
             <h1>You WON!!!</h1>
@@ -159,6 +173,20 @@
             <button on:click={reset}>
                 Another!
             </button>
+
+            <div class="grid-mines" 
+            style="grid-template-columns: repeat({width}, 2em);
+            grid-template-rows: repeat({height}, 2em);">
+                {#each squares as square, i}
+                    <Square 
+                    on:gameover={handleGameover} 
+                    on:iszero={handleZero}
+                    isMine={square} 
+                    surrounding={surrounding[i]} 
+                    gameState={gameover}
+                    id={i}/>
+                {/each}
+            </div>      
         {/if}
 
         {#if starting}
@@ -181,23 +209,24 @@
             <button on:click={()=> {starting = false}}>
                 Start!
             </button>
-            
+        {:else}
+            <div class="grid-mines" 
+            style="grid-template-columns: repeat({width}, 2em);
+            grid-template-rows: repeat({height}, 2em);">
+                {#each squares as square, i}
+                    <Square 
+                    on:gameover={handleGameover} 
+                    on:iszero={handleZero}
+                    isMine={square} 
+                    surrounding={surrounding[i]} 
+                    gameState={gameover}
+                    id={i}/>
+                {/each}
+            </div>            
         {/if}
     {/if}    
 
-    <div class="grid-mines" 
-    style="grid-template-columns: repeat({width}, 2em);
-    grid-template-rows: repeat({height}, 2em);">
-        {#each squares as square, i}
-            <Square 
-            on:gameover={handleGameover} 
-            on:iszero={handleZero}
-            isMine={square} 
-            surrounding={surrounding[i]} 
-            gameState={gameover}
-            id={i}/>
-        {/each}
-    </div>
+    
 </main>
 
 
