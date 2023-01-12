@@ -242,7 +242,7 @@
 <style>
 	div.grid-mines {
 		display: grid;
-		grid-gap: 1em;
+		grid-gap: 2em;
         justify-content: center;
 	}
 
@@ -256,6 +256,6 @@
     }
 
     main {
-        max-width: 50em;
+        max-width: 90em;
     }
 </style>

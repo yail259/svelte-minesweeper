@@ -57,7 +57,7 @@
 
 {#if gameState}
     {#if isMine}
-        <img src="rick.jpeg" alt="cat mine" width="30" height="30">
+        <img src="rick.jpeg" alt="cat mine" width="50" height="50">
     {:else}
         <div>
             {surrounding}
@@ -71,7 +71,7 @@
             </div>
         {:else}
             {#if isMine}
-                <img src="/rick.jpeg" alt="rick mine" width="30" height="30">
+                <img src="/rick.jpeg" alt="rick mine" width="50" height="50">
             {:else}
                 <div>
                     {surrounding}
@@ -80,7 +80,7 @@
         {/if}
 
         {#if isFlag}
-            <img src="/cat.jpeg" alt="cat flag" width="30" height="30">
+            <img src="/cat.jpeg" alt="cat flag" width="50" height="50">
         {/if}
     </button>
 {/if}
@@ -90,11 +90,12 @@
 
 <style>
     button {
-        margin: 2;
         padding: 0;
         outline: 0;
         border-radius: 4px;
         background-color: orange;
+        width: 3em;
+        height: 3em;
     }
 
     button:hover {
