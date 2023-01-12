@@ -2,6 +2,7 @@
     import Square from './Square.svelte'
     import { flagged } from './flagged';
     import { unmasked } from './masked';
+    import { onDestroy } from 'svelte';
 
     // size of grid
     let width = 10;
@@ -30,19 +31,10 @@
     $flagged = [];
 
     $: {
-        squares = [];
-        surrounding = [];
-        noMines = 0;     
+        surrounding = [];   
         $unmasked = [];   
 
-        for (let i=0; i < width * height; i++) {
-            if (Math.random() < PERCENTAGE_MINE) {
-                squares.push(1);
-                noMines += 1;
-            } else {
-                squares.push(0);
-            }
-        }
+        newRandomGrid();
 
         for (let i=0; i < width * height; i++) {
             let noNeighbours = 0;
@@ -60,6 +52,20 @@
 
             surrounding.push(noNeighbours);
         }     
+    }
+
+    function newRandomGrid() {
+        squares = [];
+        noMines = 0;
+
+        for (let i=0; i < width * height; i++) {
+            if (Math.random() < PERCENTAGE_MINE) {
+                squares.push(1);
+                noMines += 1;
+            } else {
+                squares.push(0);
+            }
+        }
     }
 
     function listNeighbours(itemNo, width, height) {
@@ -94,22 +100,37 @@
     }
 
 
-    function handleGameover(event) {
+    function handleGameover() {
         gameover = true;
+    }   
+
+    function updateScore() {
+        score = 0;
+        wrongScore = 0;
+
+        console.log(score);
+        for (let index of $unmasked) {
+            if (squares[index] === 0) {
+                score++;
+            }             
+        }
 
         for (let index of $flagged) {
-            if (squares[index] === 1) {
-                score++;
-            } else {
+            if (squares[index] === 0) {
                 wrongScore++;
-            }                
+            }             
         }
-    }    
+    }
+
+    const unsubscribe = unmasked.subscribe(() => {
+        updateScore();
+    });
 
 
     function reset() {
         gameover = false;
         starting = true;
+        newRandomGrid();
 
         $unmasked = [];
         $flagged = [];
@@ -132,6 +153,8 @@
             }            
         }        
     }
+
+    onDestroy(() => unsubscribe());
    
 </script>
 
@@ -167,26 +190,12 @@
         </div>      
 
     {:else}
-        {#if score===noMines}
+        {#if score===squares.length-noMines}
             <h1>You WON!!!</h1>
 
             <button on:click={reset}>
                 Another!
-            </button>
-
-            <div class="grid-mines" 
-            style="grid-template-columns: repeat({width}, 2em);
-            grid-template-rows: repeat({height}, 2em);">
-                {#each squares as square, i}
-                    <Square 
-                    on:gameover={handleGameover} 
-                    on:iszero={handleZero}
-                    isMine={square} 
-                    surrounding={surrounding[i]} 
-                    gameState={gameover}
-                    id={i}/>
-                {/each}
-            </div>      
+            </button>   
         {/if}
 
         {#if starting}
@@ -197,12 +206,12 @@
             </div>
 
             <div>
-                <input type="range" id="width" name="width" min="1" max="15" bind:value={width}>
+                <input type="range" id="width" name="width" min="2" max="15" bind:value={width}>
                 <label for="width">Width</label>
             </div>
 
             <div>
-                <input type="range" id="height" name="height" min="1" max="15" bind:value={height}>
+                <input type="range" id="height" name="height" min="2" max="15" bind:value={height}>
                 <label for="height">Height</label>
             </div>
 

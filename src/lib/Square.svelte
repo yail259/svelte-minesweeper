@@ -71,7 +71,7 @@
             </div>
         {:else}
             {#if isMine}
-                <img src="rick.jpeg" alt="rick mine" width="30" height="30">
+                <img src="/rick.jpeg" alt="rick mine" width="30" height="30">
             {:else}
                 <div>
                     {surrounding}
@@ -80,7 +80,7 @@
         {/if}
 
         {#if isFlag}
-            <img src="cat.jpeg" alt="cat flag" width="30" height="30">
+            <img src="/cat.jpeg" alt="cat flag" width="30" height="30">
         {/if}
     </button>
 {/if}
